@@ -1,0 +1,19 @@
+{
+  "name": "nes-tetris-ai",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michalbe/nes-tetris-ai.git"
+  },
+  "author": "michalbe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/michalbe/nes-tetris-ai/issues"
+  },
+  "homepage": "https://github.com/michalbe/nes-tetris-ai#readme"
+}
