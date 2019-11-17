@@ -64,6 +64,7 @@ export class NES {
             console.error("no save on slot", slot);
         }
     }
+
     frame() {
         this.image.data.set(this.framebuffer_u8);
         this.canvas_ctx.putImageData(this.image, 0, 0);
