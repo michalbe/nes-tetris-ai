@@ -6,6 +6,8 @@ interface JsNes {
     loadROM: (rom_data: string) => void;
     buttonDown: (player: number, button: string) => void;
     buttonUp: (player: number, button: string) => void;
+    toJSON: () => any;
+    fromJSON: (data: any) => void;
 }
 
 export class NES {
@@ -48,6 +50,20 @@ export class NES {
         this.nes.loadROM(rom_data);
     }
 
+    save(slot: number = 0) {
+        let data = JSON.stringify(this.nes.toJSON());
+        localStorage.setItem(`slot_${slot}`, data);
+    }
+
+    load(slot: number = 0) {
+        let text = localStorage.getItem(`slot_${slot}`);
+        if (text) {
+            let data = JSON.parse(text);
+            this.nes.fromJSON(data);
+        } else {
+            console.error("no save on slot", slot);
+        }
+    }
     frame() {
         this.image.data.set(this.framebuffer_u8);
         this.canvas_ctx.putImageData(this.image, 0, 0);
