@@ -4,7 +4,7 @@ let STARTX = 95;
 let STARTY = 47;
 let DRAW_STARTX = STARTX + 0.5;
 let DRAW_STARTY = STARTY + 0.5;
-let DEBUG_COLOR = "red";
+let DEBUG_COLOR = "lime";
 let WELL_HEIGHT = 20;
 let WELL_WIDTH = 10;
 let CELL_SIZE = 8;
@@ -59,11 +59,10 @@ export function is_cell_empty(buffer: ArrayLike<number>, cell_x: number, cell_y:
 }
 
 export function get_well(buffer: ArrayLike<number>) {
-    let well = [];
+    let well: Array<Array<number>> = [];
     for (let y = 0; y < WELL_HEIGHT; y++) {
         well[y] = [];
         for (let x = 0; x < WELL_WIDTH; x++) {
-            // @ts-ignore
             well[y][x] = is_cell_empty(buffer, x, y) ? 0 : 1;
         }
     }
