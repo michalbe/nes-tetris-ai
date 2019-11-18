@@ -1,4 +1,5 @@
 import {SCREEN_WIDTH} from "./config.js";
+import {tetraminos} from "./tetraminos.js";
 
 let STARTX = 95;
 let STARTY = 47;
@@ -35,9 +36,6 @@ export function draw_debug(ctx: CanvasRenderingContext2D) {
 }
 
 export function is_cell_empty(buffer: ArrayLike<number>, cell_x: number, cell_y: number) {
-    // let central_pixel =
-    //     STARTX + cell_x * CELL_SIZE * 4 + CELL_SIZE / 2 + SCREEN_WIDTH * (STARTY - 1) * 4;
-
     let offset = SCREEN_WIDTH * STARTY + STARTX;
     let central_pixel =
         (offset +
@@ -46,7 +44,7 @@ export function is_cell_empty(buffer: ArrayLike<number>, cell_x: number, cell_y:
             SCREEN_WIDTH * cell_y * CELL_SIZE +
             (SCREEN_WIDTH * CELL_SIZE) / 2) *
         4;
-    // console.log("index:", central_pixel);
+
     if (
         buffer[central_pixel] === 0 &&
         buffer[central_pixel + 1] === 0 &&
@@ -70,9 +68,33 @@ export function get_well(buffer: ArrayLike<number>) {
     return well;
 }
 
+export function identify_tetramino(buffer: ArrayLike<number>) {
+    let well = get_well(buffer);
+    let result: number[] = [];
+    let size = 4;
+
+    for (let y = 0; y < size; y++) {
+        for (let x = 3; x < 3 + size; x++) {
+            result.push(well[y][x]);
+        }
+    }
+
+    let tetra_identifier = result.join("");
+    if (tetraminos[tetra_identifier]) {
+        return tetraminos[tetra_identifier].name;
+    } else {
+        if ((tetra_identifier.match(/1/g) || []).length === 4) {
+            console.log("not found:", tetra_identifier);
+        }
+        return false;
+    }
+}
+
 // @ts-ignore
 window.is_cell_empty = is_cell_empty;
 // @ts-ignore
 window.draw_debug = draw_debug;
 // @ts-ignore
 window.get_well = get_well;
+// @ts-ignore
+window.identify_tetramino = identify_tetramino;

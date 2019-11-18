@@ -1,5 +1,5 @@
 import {CANVAS_ID, DEBUG, FRAMEBUFFER_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH} from "./config.js";
-import {draw_debug} from "./well.js";
+import {draw_debug, identify_tetramino} from "./well.js";
 
 declare var jsnes: any;
 interface JsNes {
@@ -72,6 +72,12 @@ export class NES {
 
         if (DEBUG) {
             draw_debug(this.canvas_ctx);
+        }
+
+        let tetramino = identify_tetramino(this.framebuffer_u8);
+
+        if (tetramino) {
+            console.log(tetramino);
         }
 
         this.nes.frame();
