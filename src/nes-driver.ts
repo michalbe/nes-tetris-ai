@@ -1,4 +1,5 @@
-import {CANVAS_ID, FRAMEBUFFER_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH} from "./config.js";
+import {CANVAS_ID, DEBUG, FRAMEBUFFER_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH} from "./config.js";
+import {draw_debug} from "./well.js";
 
 declare var jsnes: any;
 interface JsNes {
@@ -68,6 +69,11 @@ export class NES {
     frame() {
         this.image.data.set(this.framebuffer_u8);
         this.canvas_ctx.putImageData(this.image, 0, 0);
+
+        if (DEBUG) {
+            draw_debug(this.canvas_ctx);
+        }
+
         this.nes.frame();
 
         if (this.running) {
