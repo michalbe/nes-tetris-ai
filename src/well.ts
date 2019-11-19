@@ -1,42 +1,65 @@
 import {SCREEN_WIDTH} from "./config.js";
 import {tetraminos} from "./tetraminos.js";
 
+let DEBUG_COLOR = "lime";
 let STARTX = 95;
 let STARTY = 47;
 let DRAW_STARTX = STARTX + 0.5;
 let DRAW_STARTY = STARTY + 0.5;
-let DEBUG_COLOR = "lime";
 let WELL_HEIGHT = 20;
 let WELL_WIDTH = 10;
 let CELL_SIZE = 8;
+let WELL_OFFSET = SCREEN_WIDTH * STARTY + STARTX;
+
+let NEXT_STARTX = 195;
+let NEXT_STARTY = 119;
+let DRAW_NEXT_STARTX = NEXT_STARTX + 0.5;
+let DRAW_NEXT_START_Y = NEXT_STARTY + 0.5;
+let NEXT_WIDTH = 3;
+let NEXT_HEIGHT = 3;
+let NEXT_OFFSET = SCREEN_WIDTH * NEXT_STARTY + NEXT_STARTX;
 
 export function draw_debug(ctx: CanvasRenderingContext2D) {
+    draw_grid(ctx, DRAW_STARTX, DRAW_STARTY, WELL_WIDTH, WELL_HEIGHT);
+    draw_grid(ctx, DRAW_NEXT_STARTX, DRAW_NEXT_START_Y, NEXT_WIDTH, NEXT_HEIGHT);
+}
+
+function draw_grid(
+    ctx: CanvasRenderingContext2D,
+    startx: number,
+    starty: number,
+    width: number,
+    height: number
+) {
     ctx.strokeStyle = DEBUG_COLOR;
     ctx.beginPath();
-    ctx.moveTo(DRAW_STARTX, DRAW_STARTY);
-    ctx.lineTo(DRAW_STARTX, DRAW_STARTY + WELL_HEIGHT * CELL_SIZE);
-    ctx.lineTo(DRAW_STARTX + WELL_WIDTH * CELL_SIZE, DRAW_STARTY + WELL_HEIGHT * CELL_SIZE);
-    ctx.lineTo(DRAW_STARTX + WELL_WIDTH * CELL_SIZE, DRAW_STARTY);
-    ctx.lineTo(DRAW_STARTX, DRAW_STARTY);
+    ctx.moveTo(startx, starty);
+    ctx.lineTo(startx, starty + height * CELL_SIZE);
+    ctx.lineTo(startx + width * CELL_SIZE, starty + height * CELL_SIZE);
+    ctx.lineTo(startx + width * CELL_SIZE, starty);
+    ctx.lineTo(startx, starty);
     ctx.stroke();
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < width; i++) {
         ctx.beginPath();
-        ctx.moveTo(DRAW_STARTX + CELL_SIZE * i, DRAW_STARTY);
-        ctx.lineTo(DRAW_STARTX + CELL_SIZE * i, DRAW_STARTY + WELL_HEIGHT * CELL_SIZE);
+        ctx.moveTo(startx + CELL_SIZE * i, starty);
+        ctx.lineTo(startx + CELL_SIZE * i, starty + height * CELL_SIZE);
         ctx.stroke();
     }
 
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < height; i++) {
         ctx.beginPath();
-        ctx.moveTo(DRAW_STARTX, DRAW_STARTY + CELL_SIZE * i);
-        ctx.lineTo(DRAW_STARTX + WELL_WIDTH * CELL_SIZE, DRAW_STARTY + CELL_SIZE * i);
+        ctx.moveTo(startx, starty + CELL_SIZE * i);
+        ctx.lineTo(startx + width * CELL_SIZE, starty + CELL_SIZE * i);
         ctx.stroke();
     }
 }
-
-export function is_cell_empty(buffer: ArrayLike<number>, cell_x: number, cell_y: number) {
-    let offset = SCREEN_WIDTH * STARTY + STARTX;
+export function is_cell_empty(
+    buffer: ArrayLike<number>,
+    offset: number,
+    cell_x: number,
+    cell_y: number
+) {
     let central_pixel =
         (offset +
             cell_x * CELL_SIZE +
@@ -68,6 +91,18 @@ export function get_well(buffer: ArrayLike<number>) {
     return well;
 }
 
+export function get_next(buffer: ArrayLike<number>) {
+    let next: Array<Array<number>> = [];
+    for (let y = 0; y < NEXT_HEIGHT; y++) {
+        next[y] = [];
+        for (let x = 0; x < NEXT_WIDTH; x++) {
+            next[y][x] = is_cell_empty(buffer, x, y) ? 0 : 1;
+        }
+    }
+
+    return next;
+}
+
 export function identify_tetramino(buffer: ArrayLike<number>) {
     let well = get_well(buffer);
     let result: number[] = [];
@@ -82,11 +117,23 @@ export function identify_tetramino(buffer: ArrayLike<number>) {
     let tetra_identifier = result.join("");
     if (tetraminos[tetra_identifier]) {
         return tetraminos[tetra_identifier].name;
-    } else {
-        if ((tetra_identifier.match(/1/g) || []).length === 4) {
-            console.log("not found:", tetra_identifier);
+    }
+}
+
+export function identify_next_tetramino(buffer: ArrayLike<number>) {
+    let well = get_well(buffer);
+    let result: number[] = [];
+    let size = 4;
+
+    for (let y = 0; y < size; y++) {
+        for (let x = 3; x < 3 + size; x++) {
+            result.push(well[y][x]);
         }
-        return false;
+    }
+
+    let tetra_identifier = result.join("");
+    if (tetraminos[tetra_identifier]) {
+        return tetraminos[tetra_identifier].name;
     }
 }
 
