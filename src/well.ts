@@ -1,5 +1,5 @@
 import {SCREEN_WIDTH} from "./config.js";
-import {tetraminos} from "./tetraminos.js";
+import {next_tetraminos, tetraminos} from "./tetraminos.js";
 
 let DEBUG_COLOR = "lime";
 let STARTX = 95;
@@ -58,14 +58,15 @@ export function is_cell_empty(
     buffer: ArrayLike<number>,
     offset: number,
     cell_x: number,
-    cell_y: number
+    cell_y: number,
+    local_offset: number
 ) {
     let central_pixel =
         (offset +
             cell_x * CELL_SIZE +
-            CELL_SIZE / 2 +
+            local_offset +
             SCREEN_WIDTH * cell_y * CELL_SIZE +
-            (SCREEN_WIDTH * CELL_SIZE) / 2) *
+            SCREEN_WIDTH * local_offset) *
         4;
 
     if (
@@ -84,7 +85,7 @@ export function get_well(buffer: ArrayLike<number>) {
     for (let y = 0; y < WELL_HEIGHT; y++) {
         well[y] = [];
         for (let x = 0; x < WELL_WIDTH; x++) {
-            well[y][x] = is_cell_empty(buffer, x, y) ? 0 : 1;
+            well[y][x] = is_cell_empty(buffer, WELL_OFFSET, x, y, CELL_SIZE / 2) ? 0 : 1;
         }
     }
 
@@ -92,11 +93,10 @@ export function get_well(buffer: ArrayLike<number>) {
 }
 
 export function get_next(buffer: ArrayLike<number>) {
-    let next: Array<Array<number>> = [];
+    let next: Array<number> = [];
     for (let y = 0; y < NEXT_HEIGHT; y++) {
-        next[y] = [];
         for (let x = 0; x < NEXT_WIDTH; x++) {
-            next[y][x] = is_cell_empty(buffer, x, y) ? 0 : 1;
+            next.push(is_cell_empty(buffer, NEXT_OFFSET, x, y, 2) ? 0 : 1);
         }
     }
 
@@ -121,19 +121,14 @@ export function identify_tetramino(buffer: ArrayLike<number>) {
 }
 
 export function identify_next_tetramino(buffer: ArrayLike<number>) {
-    let well = get_well(buffer);
-    let result: number[] = [];
-    let size = 4;
+    let next_grid = get_next(buffer);
 
-    for (let y = 0; y < size; y++) {
-        for (let x = 3; x < 3 + size; x++) {
-            result.push(well[y][x]);
-        }
-    }
-
-    let tetra_identifier = result.join("");
-    if (tetraminos[tetra_identifier]) {
-        return tetraminos[tetra_identifier].name;
+    let tetra_identifier = next_grid.join("");
+    // console.log(tetra_identifier);
+    if (next_tetraminos[tetra_identifier]) {
+        return next_tetraminos[tetra_identifier].name;
+    } else {
+        console.log("next not found:", tetra_identifier);
     }
 }
 
@@ -145,3 +140,7 @@ window.draw_debug = draw_debug;
 window.get_well = get_well;
 // @ts-ignore
 window.identify_tetramino = identify_tetramino;
+// @ts-ignore
+window.get_next = get_next;
+// @ts-ignore
+window.identify_next_tetramino = identify_next_tetramino;
