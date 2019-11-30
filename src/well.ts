@@ -120,6 +120,21 @@ export function identify_tetramino(buffer: ArrayLike<number>) {
     }
 }
 
+export function get_tetra_code(buffer: ArrayLike<number>) {
+    let well = get_well(buffer);
+    let result: number[] = [];
+    let size = 4;
+
+    for (let y = 0; y < size; y++) {
+        for (let x = 3; x < 3 + size; x++) {
+            result.push(well[y][x]);
+        }
+    }
+
+    let tetra_identifier = result.join("");
+    console.log(tetra_identifier);
+}
+
 export function identify_next_tetramino(buffer: ArrayLike<number>) {
     let next_grid = get_next(buffer);
 
