@@ -1,6 +1,7 @@
+import {calculate_best_position} from "./calculations.js";
 import {CANVAS_ID, DEBUG, FRAMEBUFFER_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH} from "./config.js";
 import {get_all_rotations} from "./tetraminos.js";
-import {draw_debug, get_tetra_code, identify_next_tetramino, identify_tetramino} from "./well.js";
+import {get_tetra_code, get_well, identify_next_tetramino, identify_tetramino} from "./well.js";
 
 declare var jsnes: any;
 interface JsNes {
@@ -23,6 +24,7 @@ export class NES {
 
     tetramino: string | null = null;
     next: string | null = null;
+    well: Array<Array<number>> = [];
 
     constructor(rom_data: string) {
         this.nes = new jsnes.NES({
@@ -76,14 +78,22 @@ export class NES {
         this.canvas_ctx.putImageData(this.image, 0, 0);
 
         if (DEBUG) {
-            draw_debug(this.canvas_ctx);
+            // draw_debug(this.canvas_ctx);
         }
 
-        this.tetramino = identify_tetramino(this.framebuffer_u8) || this.tetramino;
+        let tetramino = identify_tetramino(this.framebuffer_u8);
 
-        this.next = identify_next_tetramino(this.framebuffer_u8) || this.next;
+        let next = identify_next_tetramino(this.framebuffer_u8);
 
-        if (this.tetramino && this.next) {
+        if (tetramino && next && (tetramino !== this.tetramino || next !== this.next)) {
+            this.tetramino = tetramino;
+            this.next = next;
+            this.well = get_well(this.framebuffer_u8);
+
+            let rotations = get_all_rotations(this.tetramino!);
+
+            calculate_best_position(this.well, rotations);
+
             console.log(`Current: ${this.tetramino}, Next: ${this.next}`);
         }
 
