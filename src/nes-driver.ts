@@ -1,4 +1,5 @@
 import {CANVAS_ID, DEBUG, FRAMEBUFFER_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH} from "./config.js";
+import {get_all_rotations} from "./tetraminos.js";
 import {draw_debug, get_tetra_code, identify_next_tetramino, identify_tetramino} from "./well.js";
 
 declare var jsnes: any;
@@ -19,6 +20,9 @@ export class NES {
     framebuffer_u32: Uint32Array;
 
     running: boolean = true;
+
+    tetramino: string | null = null;
+    next: string | null = null;
 
     constructor(rom_data: string) {
         this.nes = new jsnes.NES({
@@ -75,12 +79,12 @@ export class NES {
             draw_debug(this.canvas_ctx);
         }
 
-        let tetramino = identify_tetramino(this.framebuffer_u8);
+        this.tetramino = identify_tetramino(this.framebuffer_u8) || this.tetramino;
 
-        let next = identify_next_tetramino(this.framebuffer_u8);
+        this.next = identify_next_tetramino(this.framebuffer_u8) || this.next;
 
-        if (tetramino && next) {
-            console.log(`Current: ${tetramino}, Next: ${next}`);
+        if (this.tetramino && this.next) {
+            console.log(`Current: ${this.tetramino}, Next: ${this.next}`);
         }
 
         this.nes.frame();
@@ -144,6 +148,17 @@ export class NES {
                     return;
                 }
                 get_tetra_code(this.framebuffer_u8);
+                break;
+            case 69: // get rotations
+                if (event.type === "keyup") {
+                    return;
+                }
+
+                console.log("rotations for tetramino: ", this.tetramino);
+                if (this.tetramino) {
+                    console.log(get_all_rotations(this.tetramino));
+                }
+
                 break;
             default:
                 break;
