@@ -6,8 +6,8 @@ let STARTX = 95;
 let STARTY = 47;
 let DRAW_STARTX = STARTX + 0.5;
 let DRAW_STARTY = STARTY + 0.5;
-let WELL_HEIGHT = 20;
-let WELL_WIDTH = 10;
+export let WELL_HEIGHT = 20;
+export let WELL_WIDTH = 10;
 let CELL_SIZE = 8;
 let WELL_OFFSET = SCREEN_WIDTH * STARTY + STARTX;
 
