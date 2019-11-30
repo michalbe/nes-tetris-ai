@@ -4,6 +4,7 @@ export const FRAMEBUFFER_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT;
 export const CANVAS_ID = "nes-canvas";
 export const ROM_URL = "roms/tetris.nes";
 export const DEBUG = true;
+export const STARTING_X = 4;
 
 export const weights = {
     heights: -1, //-0.10066,

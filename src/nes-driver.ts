@@ -1,5 +1,12 @@
 import {calculate_best_position} from "./calculations.js";
-import {CANVAS_ID, DEBUG, FRAMEBUFFER_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH} from "./config.js";
+import {
+    CANVAS_ID,
+    DEBUG,
+    FRAMEBUFFER_SIZE,
+    SCREEN_HEIGHT,
+    SCREEN_WIDTH,
+    STARTING_X,
+} from "./config.js";
 import {get_all_rotations} from "./tetraminos.js";
 import {get_tetra_code, get_well, identify_next_tetramino, identify_tetramino} from "./well.js";
 
@@ -11,6 +18,13 @@ interface JsNes {
     buttonUp: (player: number, button: string) => void;
     toJSON: () => any;
     fromJSON: (data: any) => void;
+}
+
+export const enum State {
+    Identifying,
+    Rotating,
+    Movinng,
+    PushingDown,
 }
 
 export class NES {
@@ -25,6 +39,11 @@ export class NES {
     tetramino: string | null = null;
     next: string | null = null;
     well: Array<Array<number>> = [];
+
+    state: State = State.Identifying;
+
+    position: number = 0;
+    rotation: number = 0;
 
     constructor(rom_data: string) {
         this.nes = new jsnes.NES({
@@ -81,20 +100,29 @@ export class NES {
             // draw_debug(this.canvas_ctx);
         }
 
-        let tetramino = identify_tetramino(this.framebuffer_u8);
+        switch (this.state) {
+            case State.Identifying:
+                let tetramino = identify_tetramino(this.framebuffer_u8);
 
-        let next = identify_next_tetramino(this.framebuffer_u8);
+                let next = identify_next_tetramino(this.framebuffer_u8);
 
-        if (tetramino && next && (tetramino !== this.tetramino || next !== this.next)) {
-            this.tetramino = tetramino;
-            this.next = next;
-            this.well = get_well(this.framebuffer_u8);
+                if (tetramino && next && (tetramino !== this.tetramino || next !== this.next)) {
+                    this.tetramino = tetramino;
+                    this.next = next;
+                    this.well = get_well(this.framebuffer_u8);
 
-            let rotations = get_all_rotations(this.tetramino!);
+                    let rotations = get_all_rotations(this.tetramino!);
 
-            calculate_best_position(this.well, rotations);
+                    let calculated_position = calculate_best_position(this.well, rotations);
 
-            console.log(`Current: ${this.tetramino}, Next: ${this.next}`);
+                    this.position = calculated_position.x - STARTING_X;
+                    this.rotation = calculated_position.rotation;
+
+                    console.log(`Current: ${this.tetramino}, Next: ${this.next}`);
+
+                    this.state = State.Rotating;
+                }
+                break;
         }
 
         this.nes.frame();

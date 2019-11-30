@@ -9,7 +9,7 @@ export function calculate_best_position(
 
     for (let schema_index = 0; schema_index < rotation_schemas.length; schema_index++) {
         for (let row = 3; row <= WELL_HEIGHT; row++) {
-            for (let cell = 0; cell <= WELL_WIDTH; cell++) {
+            for (let cell = -2; cell <= WELL_WIDTH + 2; cell++) {
                 const new_well = calculate_for_position(
                     rotation_schemas[schema_index],
                     well,
@@ -33,6 +33,7 @@ export function calculate_best_position(
     }
 
     console.log(positions);
+
     return positions[
         Math.max.apply(
             null,
