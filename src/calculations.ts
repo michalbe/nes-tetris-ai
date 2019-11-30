@@ -94,7 +94,6 @@ export function calculate_for_position(
         console.log(y, new_well[y]);
     }
 
-    console.log("w", new_well);
     return new_well;
 }
 
