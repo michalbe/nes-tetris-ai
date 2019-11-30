@@ -1,5 +1,5 @@
 import {CANVAS_ID, DEBUG, FRAMEBUFFER_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH} from "./config.js";
-import {draw_debug, identify_next_tetramino, identify_tetramino} from "./well.js";
+import {draw_debug, get_tetra_code, identify_next_tetramino, identify_tetramino} from "./well.js";
 
 declare var jsnes: any;
 interface JsNes {
@@ -103,6 +103,7 @@ export class NES {
 
     keyboard(callback: (player: number, button: string) => void, event: KeyboardEvent) {
         let player = 1;
+        // console.log(event.keyCode);
         switch (event.keyCode) {
             case 38: // UP
                 callback(player, jsnes.Controller.BUTTON_UP);
@@ -117,11 +118,9 @@ export class NES {
                 callback(player, jsnes.Controller.BUTTON_RIGHT);
                 break;
             case 65: // 'a' - qwerty, dvorak
-            case 81: // 'q' - azerty
                 callback(player, jsnes.Controller.BUTTON_A);
                 break;
             case 83: // 's' - qwerty, azerty
-            case 79: // 'o' - dvorak
                 callback(player, jsnes.Controller.BUTTON_B);
                 break;
             case 9: // Tab
@@ -129,6 +128,22 @@ export class NES {
                 break;
             case 13: // Return
                 callback(player, jsnes.Controller.BUTTON_START);
+                break;
+            case 81: // PAUSE
+                if (event.type === "keyup") {
+                    return;
+                }
+                if (this.running) {
+                    this.stop();
+                } else {
+                    this.start();
+                }
+                break;
+            case 87: // W, get tetra code
+                if (event.type === "keyup") {
+                    return;
+                }
+                get_tetra_code(this.framebuffer_u8);
                 break;
             default:
                 break;
