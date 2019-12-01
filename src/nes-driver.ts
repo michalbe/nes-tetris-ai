@@ -21,6 +21,7 @@ interface JsNes {
 }
 
 export const enum State {
+    None,
     Identifying,
     Rotating,
     Moving,
@@ -152,7 +153,7 @@ export class NES {
                 break;
             case State.PushingDown:
                 let next_tetramino = identify_tetramino(this.framebuffer_u8);
-                if (!next_tetramino) {
+                if (!next_tetramino || next_tetramino != this.next) {
                     this.nes.buttonDown(1, jsnes.Controller.BUTTON_DOWN);
                 } else {
                     console.log("next step");
