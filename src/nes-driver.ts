@@ -115,8 +115,12 @@ export class NES {
                     this.well = get_well(this.framebuffer_u8);
 
                     let rotations = get_all_rotations(this.tetramino!);
-
-                    let calculated_position = calculate_best_position(this.well, rotations);
+                    let next_rotations = get_all_rotations(this.next!);
+                    let calculated_position = calculate_best_position(
+                        this.well,
+                        rotations,
+                        next_rotations
+                    );
 
                     this.movement = Math.abs(calculated_position.x - STARTING_X);
                     this.direction =

@@ -3,30 +3,46 @@ import {WELL_HEIGHT, WELL_WIDTH} from "./well.js";
 
 export function calculate_best_position(
     well: Array<Array<number>>,
-    rotation_schemas: Array<Array<Array<number>>>
+    rotation_schemas: Array<Array<Array<number>>>,
+    next_rotation_schemas: Array<Array<Array<number>>>
 ) {
     const positions: {[key: number]: any} = {};
 
     for (let schema_index = 0; schema_index < rotation_schemas.length; schema_index++) {
-        for (let row = 3; row <= WELL_HEIGHT; row++) {
-            for (let cell = -2; cell <= WELL_WIDTH + 2; cell++) {
-                const new_well = calculate_for_position(
-                    rotation_schemas[schema_index],
-                    well,
-                    row,
-                    cell
-                );
+        for (let next_schema = 0; next_schema < next_rotation_schemas.length; next_schema++) {
+            for (let row = 3; row <= WELL_HEIGHT; row++) {
+                for (let cell = -2; cell <= WELL_WIDTH + 2; cell++) {
+                    const new_well = calculate_for_position(
+                        rotation_schemas[schema_index],
+                        well,
+                        row,
+                        cell
+                    );
 
-                if (new_well) {
-                    const points = calculate_points(new_well);
-                    const {heights, lines, holes, bumpiness, pure_lines} = points;
-                    let height = heights + lines + holes + bumpiness;
-                    positions[height] = positions[height] || {
-                        rotation: schema_index,
-                        x: cell,
-                        new_well,
-                        weights: {heights, lines, holes, bumpiness, pure_lines},
-                    };
+                    if (new_well) {
+                        for (let next_row = 3; next_row <= WELL_HEIGHT; next_row++) {
+                            for (let next_cell = -2; next_cell <= WELL_WIDTH + 2; next_cell++) {
+                                const new_well_with_next = calculate_for_position(
+                                    next_rotation_schemas[next_schema],
+                                    new_well,
+                                    next_row,
+                                    next_cell
+                                );
+
+                                if (new_well_with_next) {
+                                    const points = calculate_points(new_well_with_next);
+                                    const {heights, lines, holes, bumpiness, pure_lines} = points;
+                                    let height = heights + lines + holes + bumpiness;
+                                    positions[height] = positions[height] || {
+                                        rotation: schema_index,
+                                        x: cell,
+                                        new_well,
+                                        weights: {heights, lines, holes, bumpiness, pure_lines},
+                                    };
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
