@@ -20,6 +20,7 @@ export function calculate_best_position(
     }
 
     height -= WELL_HEIGHT_CALCULATION_MARGIN;
+    height = Math.max(height, 0);
 
     console.log("max well height", height);
     for (let schema_index = 0; schema_index < rotation_schemas.length; schema_index++) {
@@ -95,13 +96,13 @@ export function calculate_for_position(
                 } else if (i > 0 && well[i - 1][j] === 1 && schema[i - y][j - x] === 1) {
                     // console.log(j, i-1);
                     return false;
-                } else if (i > 0 && well[i - 2][j] === 1 && schema[i - y][j - x] === 1) {
+                } else if (i > 1 && well[i - 2][j] === 1 && schema[i - y][j - x] === 1) {
                     // console.log(j, i-1);
                     return false;
-                } else if (i > 0 && well[i - 3][j] === 1 && schema[i - y][j - x] === 1) {
+                } else if (i > 2 && well[i - 3][j] === 1 && schema[i - y][j - x] === 1) {
                     // console.log(j, i-1);
                     return false;
-                } else if (i > 0 && well[i - 4][j] === 1 && schema[i - y][j - x] === 1) {
+                } else if (i > 3 && well[i - 4][j] === 1 && schema[i - y][j - x] === 1) {
                     // console.log(j, i-1);
                     return false;
                 } else {
