@@ -150,6 +150,16 @@ export class NES {
                     this.state = State.PushingDown;
                 }
                 break;
+            case State.PushingDown:
+                let next_tetramino = identify_tetramino(this.framebuffer_u8);
+                if (!next_tetramino) {
+                    this.nes.buttonDown(1, jsnes.Controller.BUTTON_DOWN);
+                } else {
+                    console.log("next step");
+                    this.nes.buttonUp(1, jsnes.Controller.BUTTON_DOWN);
+                    this.state = State.Identifying;
+                }
+                break;
         }
 
         this.nes.frame();
