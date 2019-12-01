@@ -1,4 +1,4 @@
-import {weights} from "./config.js";
+import {weights, WELL_HEIGHT_CALCULATION_MARGIN} from "./config.js";
 import {WELL_HEIGHT, WELL_WIDTH} from "./well.js";
 
 export function calculate_best_position(
@@ -8,9 +8,23 @@ export function calculate_best_position(
 ) {
     const positions: {[key: number]: any} = {};
 
+    let height = WELL_HEIGHT;
+
+    for (let column = 0; column < well[0].length; column++) {
+        for (let row = 3; row < well.length; row++) {
+            if (well[row][column] === 1) {
+                height = Math.min(row, height);
+                break;
+            }
+        }
+    }
+
+    height -= WELL_HEIGHT_CALCULATION_MARGIN;
+
+    console.log("max well height", height);
     for (let schema_index = 0; schema_index < rotation_schemas.length; schema_index++) {
         for (let next_schema = 0; next_schema < next_rotation_schemas.length; next_schema++) {
-            for (let row = 3; row <= WELL_HEIGHT; row++) {
+            for (let row = height; row <= WELL_HEIGHT; row++) {
                 for (let cell = -2; cell <= WELL_WIDTH + 2; cell++) {
                     const new_well = calculate_for_position(
                         rotation_schemas[schema_index],
@@ -20,7 +34,7 @@ export function calculate_best_position(
                     );
 
                     if (new_well) {
-                        for (let next_row = 3; next_row <= WELL_HEIGHT; next_row++) {
+                        for (let next_row = height; next_row <= WELL_HEIGHT; next_row++) {
                             for (let next_cell = -2; next_cell <= WELL_WIDTH + 2; next_cell++) {
                                 const new_well_with_next = calculate_for_position(
                                     next_rotation_schemas[next_schema],
@@ -79,6 +93,15 @@ export function calculate_for_position(
                 ) {
                     return false;
                 } else if (i > 0 && well[i - 1][j] === 1 && schema[i - y][j - x] === 1) {
+                    // console.log(j, i-1);
+                    return false;
+                } else if (i > 0 && well[i - 2][j] === 1 && schema[i - y][j - x] === 1) {
+                    // console.log(j, i-1);
+                    return false;
+                } else if (i > 0 && well[i - 3][j] === 1 && schema[i - y][j - x] === 1) {
+                    // console.log(j, i-1);
+                    return false;
+                } else if (i > 0 && well[i - 4][j] === 1 && schema[i - y][j - x] === 1) {
                     // console.log(j, i-1);
                     return false;
                 } else {

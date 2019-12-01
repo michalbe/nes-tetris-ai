@@ -6,6 +6,8 @@ export const ROM_URL = "roms/tetris.nes";
 export const DEBUG = true;
 export const STARTING_X = 3;
 
+export const WELL_HEIGHT_CALCULATION_MARGIN = 5;
+
 export const weights = {
     heights: -0.10066,
     lines: 0.360666,
