@@ -42,7 +42,9 @@ export class NES {
 
     state: State = State.Identifying;
 
-    position: number = 0;
+    movement: number = 0;
+    direction: string = "";
+
     rotation: number = 0;
 
     constructor(rom_data: string) {
@@ -115,7 +117,11 @@ export class NES {
 
                     let calculated_position = calculate_best_position(this.well, rotations);
 
-                    this.position = calculated_position.x - STARTING_X;
+                    this.movement = Math.abs(calculated_position.x - STARTING_X);
+                    this.direction =
+                        calculated_position.x - STARTING_X > 0
+                            ? jsnes.Controller.BUTTON_RIGHT
+                            : jsnes.Controller.BUTTON_LEFT;
                     this.rotation = calculated_position.rotation;
 
                     console.log(`Current: ${this.tetramino}, Next: ${this.next}`);
@@ -131,6 +137,17 @@ export class NES {
                     this.rotation--;
                 } else {
                     this.state = State.Moving;
+                }
+                break;
+
+            case State.Moving:
+                if (this.movement) {
+                    this.nes.buttonDown(1, this.direction);
+                    this.nes.frame();
+                    this.nes.buttonUp(1, this.direction);
+                    this.movement--;
+                } else {
+                    this.state = State.PushingDown;
                 }
                 break;
         }
