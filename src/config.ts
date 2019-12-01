@@ -4,11 +4,11 @@ export const FRAMEBUFFER_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT;
 export const CANVAS_ID = "nes-canvas";
 export const ROM_URL = "roms/tetris.nes";
 export const DEBUG = true;
-export const STARTING_X = 4;
+export const STARTING_X = 3;
 
 export const weights = {
-    heights: -1, //-0.10066,
-    lines: 1, //0.360666,
-    holes: -1, //-0.995663,
-    bumpiness: -1, //-0.184483,
+    heights: -0.10066,
+    lines: 0.360666,
+    holes: -0.995663,
+    bumpiness: -0.184483,
 };
