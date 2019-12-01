@@ -15,7 +15,7 @@ req.onload = () => {
         // @ts-ignore
         nes.start();
         // @ts-ignore
-        nes.load(1);
+        nes.load(0);
     } else if (req.status === 0) {
         // Aborted, so ignore error
     } else {
