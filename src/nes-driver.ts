@@ -6,6 +6,7 @@ import {
     SCREEN_HEIGHT,
     SCREEN_WIDTH,
     STARTING_X,
+    WORKER,
 } from "./config.js";
 import {get_all_rotations} from "./tetraminos.js";
 import {get_tetra_code, get_well, identify_next_tetramino, identify_tetramino} from "./well.js";
@@ -48,6 +49,8 @@ export class NES {
 
     rotation: number = 0;
 
+    worker: Worker;
+
     constructor(rom_data: string) {
         this.nes = new jsnes.NES({
             onFrame: (framebuffer_24: Array<number>) => {
@@ -56,6 +59,25 @@ export class NES {
                 }
             },
         });
+
+        this.worker = new Worker("js/worker.js");
+
+        this.worker.onmessage = e => {
+            let calculated_position = e.data;
+
+            this.movement = Math.abs(calculated_position.x - STARTING_X);
+            this.direction =
+                calculated_position.x - STARTING_X > 0
+                    ? jsnes.Controller.BUTTON_RIGHT
+                    : jsnes.Controller.BUTTON_LEFT;
+            this.rotation = calculated_position.rotation;
+
+            console.log(
+                `Worker answer: Movement: ${this.movement}, Direction: ${this.direction}, Rotation: ${this.rotation}`
+            );
+
+            this.state = State.Rotating;
+        };
 
         let canvas = document.getElementById(CANVAS_ID);
         this.canvas_ctx = (canvas as HTMLCanvasElement).getContext("2d")!;
@@ -116,22 +138,30 @@ export class NES {
 
                     let rotations = get_all_rotations(this.tetramino!);
                     let next_rotations = get_all_rotations(this.next!);
-                    let calculated_position = calculate_best_position(
-                        this.well,
-                        rotations,
-                        next_rotations
-                    );
 
-                    this.movement = Math.abs(calculated_position.x - STARTING_X);
-                    this.direction =
-                        calculated_position.x - STARTING_X > 0
-                            ? jsnes.Controller.BUTTON_RIGHT
-                            : jsnes.Controller.BUTTON_LEFT;
-                    this.rotation = calculated_position.rotation;
+                    if (WORKER) {
+                        this.worker.postMessage([this.well, rotations, next_rotations]);
+                    } else {
+                        let calculated_position = calculate_best_position(
+                            this.well,
+                            rotations,
+                            next_rotations
+                        );
+                        this.movement = Math.abs(calculated_position.x - STARTING_X);
+                        this.direction =
+                            calculated_position.x - STARTING_X > 0
+                                ? jsnes.Controller.BUTTON_RIGHT
+                                : jsnes.Controller.BUTTON_LEFT;
+                        this.rotation = calculated_position.rotation;
+
+                        console.log(
+                            `Movement: ${this.movement}, Direction: ${this.direction}, Rotation: ${this.rotation}`
+                        );
+
+                        this.state = State.Rotating;
+                    }
 
                     console.log(`Current: ${this.tetramino}, Next: ${this.next}`);
-
-                    this.state = State.Rotating;
                 }
                 break;
             case State.Rotating:
@@ -171,7 +201,9 @@ export class NES {
 
         if (this.running) {
             window.requestAnimationFrame(() => {
+                // setTimeout(() => {
                 this.frame();
+                // }, 50);
             });
         }
     }

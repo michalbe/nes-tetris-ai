@@ -144,13 +144,14 @@ export function calculate_points(well: Array<Array<number>>) {
     let holes = 0;
     let bumpiness = 0;
 
-    for (let row = 0; row < well.length - 1; row++) {
-        if (well[row].join("") === "111111111111") {
-            lines++;
-            well.splice(row, 1);
-            row--;
-        }
-    }
+    // Not adding points for lines here gives better effects
+    // for (let row = 0; row < well.length - 1; row++) {
+    //     if (well[row].join("") === "1111111111") {
+    //         lines++;
+    //         well.splice(row, 1);
+    //         row--;
+    //     }
+    // }
 
     for (let column = 0; column < well[0].length; column++) {
         heights[column] = 0;
@@ -183,7 +184,6 @@ export function calculate_points(well: Array<Array<number>>) {
         return memo;
     }, 0);
 
-    // heights = Math.max.apply(null, heights) * weights.heights;
     let new_heights =
         (heights.reduce((a, b) => {
             return a + b * b;
