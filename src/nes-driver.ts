@@ -23,7 +23,7 @@ interface JsNes {
 export const enum State {
     Identifying,
     Rotating,
-    Movinng,
+    Moving,
     PushingDown,
 }
 
@@ -121,6 +121,16 @@ export class NES {
                     console.log(`Current: ${this.tetramino}, Next: ${this.next}`);
 
                     this.state = State.Rotating;
+                }
+                break;
+            case State.Rotating:
+                if (this.rotation) {
+                    this.nes.buttonDown(1, jsnes.Controller.BUTTON_A);
+                    this.nes.frame();
+                    this.nes.buttonUp(1, jsnes.Controller.BUTTON_A);
+                    this.rotation--;
+                } else {
+                    this.state = State.Moving;
                 }
                 break;
         }
