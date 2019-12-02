@@ -4,8 +4,8 @@
 
 ### Running
 
--   download Classic Tetris NES rom (I'm not sure about licensing of 30yo+ games, so I'm not including it in the repo. It's [very easy to find though](https://www.google.com/search?q=tetris+nes+rom&oq=tetris+nes+rom))
--   put it into `public/roms/tetris.nes`
+-   download Classic Tetris NES rom (I'm not sure about licensing of 30yo+ games, so I'm not including it in the repo. It's [very easy to find though](https://www.google.com/search?q=tetris+nes+rom))
+-   save it as `public/roms/tetris.nes`
 -   `npm i`
 -   `npm run start`
 
