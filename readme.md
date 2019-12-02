@@ -19,6 +19,6 @@
     -   pause it right after the first tetramino is visible (`Q`)
     -   run `nes.save(0)` in the console.
     -   `index.ts` will load previously saved state if available
-    -   it's possible to have multiple starting points ("saves"),just increment the argument passed to the `load/save` methods
+    -   it's possible to have multiple starting points ("saves"), just increment the argument passed to the `load/save` methods
 -   The best result I get so far was ~517k points, what was more than enough to qualify to [Classic Tetris World Championship](https://thectwc.com/) last year. 2019 threshold was ~650k, so we're not there yet ;).
 -   **Feel free to open pull requests with improvements**.
